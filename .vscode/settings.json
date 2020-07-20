@@ -1,0 +1,10 @@
+{
+  "search.exclude": {
+    "dist": true
+  },
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.tsdk": "./node_modules/typescript/lib"
+}
