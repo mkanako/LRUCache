@@ -1,17 +1,19 @@
+type KEY_TYPE = string | number
+type NODE_POINTER_TYPE<T> = Node<T> | DummyNode<T>
+
+function time () {
+  return (new Date()).getTime()
+}
+
 class Node<T> {
-  next!: Node<T> | DummyNode<T>
-  prev!: Node<T> | DummyNode<T>
-  key: string
-  value: T
-  constructor (key: string, value: T) {
-    this.key = key
-    this.value = value
-  }
+  next!: NODE_POINTER_TYPE<T>
+  prev!: NODE_POINTER_TYPE<T>
+  constructor (public key: KEY_TYPE, public value: T) { }
 }
 
 class DummyNode<T> {
-  next: Node<T> | DummyNode<T> | null = null
-  prev: Node<T> | DummyNode<T> | null = null
+  next!: NODE_POINTER_TYPE<T>
+  prev!: NODE_POINTER_TYPE<T>
 }
 
 class DoublyLinkedList<T> {
@@ -26,21 +28,19 @@ class DoublyLinkedList<T> {
     this.tail.prev = this.head
   }
 
-  size (): number {
+  size () {
     return this.length
   }
 
-  add (node: Node<T>): void {
-    if (this.head.next) {
-      node.next = this.head.next
-      node.prev = this.head
-      this.head.next.prev = node
-      this.head.next = node
-      this.length++
-    }
+  add (node: Node<T>) {
+    node.next = this.head.next
+    node.prev = this.head
+    this.head.next.prev = node
+    this.head.next = node
+    this.length++
   }
 
-  remove (node: Node<T>): void {
+  remove (node: Node<T>) {
     const prev = node.prev
     const next = node.next
     node.prev.next = next
@@ -48,26 +48,21 @@ class DoublyLinkedList<T> {
     this.length--
   }
 
-  pop (): Node<T> | null {
-    if (this.tail.prev instanceof Node) {
-      const last = this.tail.prev
+  pop () {
+    const last = this.getLast()
+    if (last) {
       this.remove(last)
-      return last
     }
-    return null
+    return last
   }
 
-  getLast (): Node<T> | null {
+  getLast () {
     return this.tail.prev instanceof Node ? this.tail.prev : null
   }
 }
 
-function time (): number {
-  return (new Date()).getTime()
-}
-
 export default class LRUCache<T = string> {
-  private map: Map<string, [Node<T>, Node<number>]>
+  private map: Map<KEY_TYPE, [Node<T>, Node<number>]>
   private dataList: DoublyLinkedList<T>
   private timestampList: DoublyLinkedList<number>
   private capacity: number
@@ -81,7 +76,7 @@ export default class LRUCache<T = string> {
     this.expire = expire * 1000
   }
 
-  get (key: string): T | undefined {
+  get (key: KEY_TYPE): T | undefined {
     const result = this.map.get(key)
     if (result) {
       if (result[1].value + this.expire >= time()) {
@@ -97,7 +92,7 @@ export default class LRUCache<T = string> {
     return undefined
   }
 
-  set (key: string, value: T): void {
+  set (key: KEY_TYPE, value: T): void {
     const dataNode = new Node(key, value)
     const timestampNode = new Node(key, time())
     const result = this.map.get(key)
