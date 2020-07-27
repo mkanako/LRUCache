@@ -136,7 +136,7 @@ class ListContainer<T> {
   }
 }
 
-export default class LRUCache<T = string> {
+export default class LRUCache<T = unknown> {
   private map: Map<KEY_TYPE, LIST_ITEM_TYPE<T>>
   private list: ListContainer<T>
   private capacity: number
@@ -163,6 +163,7 @@ export default class LRUCache<T = string> {
   }
 
   set (key: KEY_TYPE, value: T): void {
+    if (value === undefined) return
     const item = this.list.create(key, value)
     const oldItem = this.map.get(key)
     if (oldItem) {
