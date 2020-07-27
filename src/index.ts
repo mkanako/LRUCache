@@ -66,9 +66,9 @@ class ListContainer<T> {
   private dataList: DoublyLinkedList<T>
   private timestampList!: DoublyLinkedList<number>
 
-  constructor (private expire: number) {
+  constructor (private expiry: number) {
     this.dataList = new DoublyLinkedList()
-    if (this.expire > 0) {
+    if (this.expiry > 0) {
       this.timestampList = new DoublyLinkedList()
     }
   }
@@ -79,7 +79,7 @@ class ListContainer<T> {
 
   create (key: KEY_TYPE, value: T): LIST_ITEM_TYPE<T> {
     const dataNode = new Node(key, value)
-    if (this.expire > 0) {
+    if (this.expiry > 0) {
       const timestampNode = new Node(key, time())
       return [dataNode, timestampNode]
     }
@@ -92,7 +92,7 @@ class ListContainer<T> {
       this.dataList.add(data)
       return data.value
     } else {
-      if (data[1].value + this.expire >= time()) {
+      if (data[1].value + this.expiry >= time()) {
         this.dataList.remove(data[0])
         this.dataList.add(data[0])
         return data[0].value
@@ -123,9 +123,9 @@ class ListContainer<T> {
   }
 
   getClearKey () {
-    if (this.expire > 0) {
+    if (this.expiry > 0) {
       const tLast = this.timestampList.getLast()
-      if (tLast && time() > tLast.value + this.expire) {
+      if (tLast && time() > tLast.value + this.expiry) {
         return tLast.key
       }
     }
@@ -140,13 +140,13 @@ export default class LRUCache<T = unknown> {
   private map: Map<KEY_TYPE, LIST_ITEM_TYPE<T>>
   private list: ListContainer<T>
   private capacity: number
-  private expire: number
+  private expiry: number
 
-  constructor (capacity = 20, expire = 0) {
+  constructor (capacity = 20, expiry = 0) {
     this.capacity = capacity
-    this.expire = expire * 1000
+    this.expiry = expiry * 1000
     this.map = new Map()
-    this.list = new ListContainer(this.expire)
+    this.list = new ListContainer(this.expiry)
   }
 
   get (key: KEY_TYPE): T | undefined {
