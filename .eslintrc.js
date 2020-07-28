@@ -23,8 +23,8 @@ module.exports = {
       'error',
       'consistent-as-needed',
     ],
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-useless-constructor': 'off',
+    'no-console': process.env.NODE_ENV === 'publish' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'publish' ? 'error' : 'off',
   },
 }
